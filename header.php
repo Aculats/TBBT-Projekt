@@ -13,8 +13,15 @@ require_once 'config.php';
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <title>TBBT - Browser Game</title>
+    <title>TBBT - <?php
+        echo ( isset( $_GET['game'] ) && !empty( $_GET['game'] ) ? ucfirst( $_GET['game'] ) : 'Browser Game' );
+        ?></title>
 </head>
 <body>
-<header></header>
+<header>
+    <nav>
+        <a href="?game=test">Test</a>
+        <a href="?game=game">Game</a>
+    </nav>
+</header>
 <main>

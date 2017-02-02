@@ -6,10 +6,15 @@
  * Time: 10:48
  */
 
-$dbUser = 'schnick';
-$dbPass = 'schnick';
+$dbUser = 'root';
+$dbPass = '';
 $dbName = 'schnick-schnack';
 $dbHost = 'localhost';
 
-$db = new PDO( 'mysql:host=' . $dbHost . ';dbname=' . $dbName, $dbUser, $dbPass );
-//$db = new PDO( 'mysql:host=localhost;dbname=test', $user, $pass );
+$db = new PDO( 'mysql:host=' . $dbHost, $dbUser, $dbPass );
+
+if ( !$db->exec( 'USE ' . $dbName ) ) {
+    $sql = file_get_contents( 'tables.sql' );
+    $db->query( $sql );
+    unset( $sql );
+}
