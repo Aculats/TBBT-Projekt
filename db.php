@@ -6,15 +6,22 @@
  * Time: 10:48
  */
 
-$dbUser = 'root';
-$dbPass = '';
+$dbUser = 'schnickuser';
+$dbPass = 'schnick';
 $dbName = 'schnick-schnack';
 $dbHost = 'localhost';
 
-$db = new PDO( 'mysql:host=' . $dbHost, $dbUser, $dbPass );
+try {
+    $db = new PDO( 'mysql:host=' . $dbHost, $dbUser, $dbPass );
+    $db->exec( 'USE ' . $dbName );
+} catch ( PDOException $e ) {
+    $tempDB = new PDO( 'mysql:host=' . $dbHost, 'root', '' );
+    $tempSQL = file_get_contents( 'tables.sql' );
+    $tempDB->query( $tempSQL );
+    unset( $tempSQL );
+    unset( $tempDB );
 
-if ( !$db->exec( 'USE ' . $dbName ) ) {
-    $sql = file_get_contents( 'tables.sql' );
-    $db->query( $sql );
-    unset( $sql );
+    $db = new PDO( 'mysql:host=' . $dbHost, $dbUser, $dbPass );
+
+    $db->exec( 'USE ' . $dbName );
 }
