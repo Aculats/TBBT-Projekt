@@ -8,10 +8,19 @@
 
 require_once 'header.php';
 
-if ( isset( $_GET['game'] ) && !empty( $_GET['game'] ) && is_file( $_GET['game'] . '.php' ) ) {
-    require_once $_GET['game'] . '.php';
-} elseif ( !empty( $_GET ) ) {
-    echo '<h1>Seite nicht gefunden</h1>';
+if ( isset( $_POST['login'] ) ) {
+    login( $_POST );
+} elseif ( isset( $_POST['register'] ) ) {
+    register( $_POST );
+}
+
+if ( !empty( $_GET ) ) {
+    $getKeys = array_keys( $_GET );
+    if ( count( $getKeys ) < 2 && is_file( $getKeys[0] . '.php' ) ) {
+        require_once $getKeys[0] . '.php';
+    } else {
+        goToHome();
+    }
 } else {
     require_once 'home.php';
 }

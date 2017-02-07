@@ -4,6 +4,11 @@
  * @author Luca
  * @licence MIT
  */
+
+if ( isset( $_SESSION['failMessage'] ) ) {
+    echo $_SESSION['failMessage'];
+    unset( $_SESSION['failMessage'] );
+}
 ?>
 
 <div class="headline">

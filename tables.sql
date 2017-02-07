@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.1
--- http://www.phpmyadmin.net
+-- version 4.6.5.2
+-- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 02. Feb 2017 um 10:07
--- Server-Version: 10.1.19-MariaDB
--- PHP-Version: 7.0.13
+-- Erstellungszeit: 07. Feb 2017 um 18:53
+-- Server-Version: 10.1.21-MariaDB
+-- PHP-Version: 7.0.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,49 +17,43 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `schnick-schnack`
+-- Datenbank: `tbbt`
 --
-CREATE DATABASE IF NOT EXISTS `schnick-schnack` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `schnick-schnack`;
+CREATE DATABASE IF NOT EXISTS `tbbt` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `tbbt`;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `spieler`
+-- Tabellenstruktur für Tabelle `matches`
 --
 
-DROP TABLE IF EXISTS `spieler`;
-CREATE TABLE `spieler` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `siege` int(11) NOT NULL,
-  `niederlagen` int(11) NOT NULL,
-  `schere` varchar(255) NOT NULL,
-  `echse` varchar(255) NOT NULL,
-  `spock` varchar(255) NOT NULL,
-  `stein` varchar(255) NOT NULL,
-  `papier` varchar(255) NOT NULL
+DROP TABLE IF EXISTS `matches`;
+CREATE TABLE IF NOT EXISTS `matches` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `players` varchar(255) NOT NULL,
+  `winner` int(11) NOT NULL,
+  `loser` int(11) NOT NULL,
+  `rounds` tinyint(4) NOT NULL,
+  `elements` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Indizes der exportierten Tabellen
---
+-- --------------------------------------------------------
 
 --
--- Indizes für die Tabelle `spieler`
---
-ALTER TABLE `spieler`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT für exportierte Tabellen
+-- Tabellenstruktur für Tabelle `users`
 --
 
---
--- AUTO_INCREMENT für Tabelle `spieler`
---
-ALTER TABLE `spieler`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` varchar(25) NOT NULL,
+  `password` varchar(60) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
@@ -67,6 +61,6 @@ ALTER TABLE `spieler`
 --
 -- Create user for database
 --
-CREATE USER schnickuser@localhost IDENTIFIED BY 'schnick';
-GRANT ALL PRIVILEGES ON schnick-schnack.* TO schnickuser@localhost IDENTIFIED BY 'schnick';
+CREATE USER 'tbbt-user@localhost' IDENTIFIED BY 'tbbt-pass';
+GRANT ALL PRIVILEGES ON tbbt.* TO 'tbbt-user@localhost' IDENTIFIED BY 'tbbt-pass';
 FLUSH PRIVILEGES;

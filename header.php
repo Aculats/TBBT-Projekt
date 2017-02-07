@@ -7,21 +7,24 @@
  */
 
 require_once 'config.php';
-
 ?>
 
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <title>TBBT - <?php
-        echo ( isset( $_GET['game'] ) && !empty( $_GET['game'] ) ? ucfirst( $_GET['game'] ) : 'Browser Game' );
-        ?></title>
+    <title><?php echo WEB_NAME; ?></title>
 </head>
 <body>
 <header>
     <nav>
-        <a href="?game=test">Test</a>
-        <a href="?game=game">Game</a>
+        <a href="<?php echo WEB_DIR; ?>">Home</a>
+        <a href="?game">Game</a>
+        <?php if ( loggedIn() ): ?>
+            <a href="?logout">Logout</a>
+        <?php else: ?>
+            <a href="?login">Login</a>
+            <a href="?register">Register</a>
+        <?php endif; ?>
     </nav>
 </header>
 <main>

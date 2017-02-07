@@ -6,22 +6,41 @@
  * Time: 10:48
  */
 
-$dbUser = 'schnickuser';
-$dbPass = 'schnick';
-$dbName = 'schnick-schnack';
-$dbHost = 'localhost';
+/**
+ * PDO options / configuration details.
+ * I'm going to set the error mode to "Exceptions".
+ * I'm also going to turn off emulated prepared statements.
+ */
+$pdoOptions = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_EMULATE_PREPARES => false,
+];
 
-try {
-    $db = new PDO( 'mysql:host=' . $dbHost, $dbUser, $dbPass );
-    $db->exec( 'USE ' . $dbName );
-} catch ( PDOException $e ) {
-    $tempDB = new PDO( 'mysql:host=' . $dbHost, 'root', '' );
-    $tempSQL = file_get_contents( 'tables.sql' );
-    $tempDB->query( $tempSQL );
-    unset( $tempSQL );
-    unset( $tempDB );
+/**
+ * Tables in DB - tbbt:
+ *
+ * users:
+ *  - id        -> int (primary)
+ *  - username  -> varchar (25)
+ *  - password  -> varchar (60)
+ *
+ * matches:
+ *  - id        -> int (primary)
+ *  - players   -> JSON
+ *  - winner    -> int
+ *  - loser     -> int
+ *  - rounds    -> tinyint
+ *  - elements  -> JSON
+ */
+$tables = [
+    'users',
+    'matches'
+];
 
-    $db = new PDO( 'mysql:host=' . $dbHost, $dbUser, $dbPass );
-
-    $db->exec( 'USE ' . $dbName );
-}
+// Connect to MySQL and instantiate the PDO object.
+$pdo = new PDO(
+    'mysql:host=' . MYSQL_HOST . ';dbname=' . MYSQL_DATABASE, // DSN
+    MYSQL_USER, // Username
+    MYSQL_PASSWORD, // Password
+    $pdoOptions // Options
+);

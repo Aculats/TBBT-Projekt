@@ -6,4 +6,13 @@
  * Time: 10:53
  */
 
+require_once 'init_constants.php';
+
+// Include our MySQL connection.
 require_once 'db.php';
+
+// Start the session.
+session_start();
+
+// Include our basic functions.
+require_once 'functions.php';
