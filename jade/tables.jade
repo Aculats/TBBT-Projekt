@@ -1,0 +1,23 @@
+table
+  thead
+    tr
+      th(scope='col') #ID:
+      th(scope='col') First Name:
+      th(scope='col') Last Name:
+      th(scope='col') Location:
+  tbody.striped
+    //----------------------------------------------
+    //- Assign php row expressions to jade variables
+    - id         = '#'+php("$row['id']")
+    - first_name = php("$row['first_name']")
+    - last_name  = php("$row['last_name']")
+    - location   = php("$row['location']")
+    //----------------------------------------------
+    :php foreach($table as $row):
+    tr
+      td!= id
+      td!= first_name
+      td!= last_name
+      td!= location
+    :php endforeach;
+

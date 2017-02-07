@@ -5,12 +5,7 @@
  * @licence MIT
  */
 
-if ( isset( $_SESSION['failMessage'] ) ) {
-    echo $_SESSION['failMessage'];
-    unset( $_SESSION['failMessage'] );
-}
-?>
+$template = new lib\Template();
 
-<div class="headline">
-    <h1>Home</h1>
-</div>
+$template->assign( 'session', $_SESSION );
+$template->display( 'templates/home.phtml' );

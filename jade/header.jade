@@ -1,0 +1,19 @@
+- webDir = php("$webDir")
+- webName = php("$webName")
+- loggedIn = php("$loggedIn")
+
+doctype html
+head
+  link(rel='stylesheet', type='text/css', href='style.css')
+  title!= webName
+body
+  header
+    nav
+      a(href!=webDir) Home
+      a(href='?game') Game
+      if loggedIn !== false
+        a(href='?logout') Logout
+      else
+        a(href='?login') Login
+        a(href='?register') Register
+  main

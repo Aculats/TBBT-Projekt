@@ -5,8 +5,7 @@
  * Date: 01.02.2017
  * Time: 10:17
  */
-?>
-</main>
-<footer></footer>
-</body>
-</html>
+
+$template = new lib\Template();
+
+$template->display( 'templates/footer.phtml' );

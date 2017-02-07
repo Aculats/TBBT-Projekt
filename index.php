@@ -26,3 +26,5 @@ if ( !empty( $_GET ) ) {
 }
 
 require_once 'footer.php';
+
+var_dump(loggedIn());

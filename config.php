@@ -11,6 +11,14 @@ require_once 'init_constants.php';
 // Include our MySQL connection.
 require_once 'db.php';
 
+// Include classes.
+$classArray = scandir( 'lib' );
+foreach ( $classArray as $class ) {
+    if ( strpos( $class, '.class.php' ) ) {
+        require_once( 'lib/' . $class );
+    }
+}
+
 // Start the session.
 session_start();
 
