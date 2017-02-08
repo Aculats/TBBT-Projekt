@@ -11,9 +11,7 @@ body
     nav
       a(href!=webDir) Home
       a(href='?game') Game
-      if loggedIn !== false
-        a(href='?logout') Logout
-      else
-        a(href='?login') Login
-        a(href='?register') Register
+      a(href='?logout') Logout
+      a(href='?login') Login
+      a(href='?register') Register
   main

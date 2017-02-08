@@ -9,9 +9,9 @@
 require_once 'header.php';
 
 if ( isset( $_POST['login'] ) ) {
-    login( $_POST );
+    $user = \lib\User::load( $_POST );
 } elseif ( isset( $_POST['register'] ) ) {
-    register( $_POST );
+    $user = new \lib\User( $_POST );
 }
 
 if ( !empty( $_GET ) ) {

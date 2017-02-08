@@ -5,52 +5,6 @@
  * @licence MIT
  */
 
-/**
- * @param $post
- * @return bool|string
- */
-function register( $post ) {
-    global $pdo;
-
-    // Retrieve the field values from our registration form.
-    $username = !empty( $post['username'] ) ? trim( $post['username'] ) : null;
-    $password = !empty( $post['password'] ) ? trim( $post['password'] ) : null;
-
-    // ToDo: Add error checking.
-
-    // Construct the SQL statement and prepare it.
-    $sql = "SELECT COUNT(username) AS num FROM users WHERE username = :username";
-    $stmt = $pdo->prepare( $sql );
-
-    // Bind the provided username to our prepared statement.
-    $stmt->bindValue( ':username', $username );
-    $stmt->execute();
-
-    // Fetch the row.
-    $row = $stmt->fetch( PDO::FETCH_ASSOC );
-
-    if ( $row['num'] > 0 ) {
-        die( 'Der Benutzername existiert bereits.' );
-    }
-
-    // Hash the password as we do NOT want to store our passwords in plain text.
-    $passwordHash = password_hash( $password, PASSWORD_BCRYPT, ['cost' => 12] );
-
-    // Prepare our INSERT statement.
-    $sql = "INSERT INTO users (username, password) VALUES (:username, :password)";
-    $stmt = $pdo->prepare( $sql );
-    $stmt->bindValue( ':username', $username );
-    $stmt->bindValue( ':password', $passwordHash );
-    $result = $stmt->execute();
-
-    // If the signup progress is successful.
-    if ( $result ) {
-        echo 'Vielen Dank, dass Sie sich für ' . WEB_NAME . ' registriert haben.';
-        goToHome();
-    }
-
-    return false;
-}
 
 /**
  * @param $post
