@@ -6,10 +6,11 @@
  * Time: 10:16
  */
 
-require_once 'config.php';
+require_once 'config/config.php';
 
 $template = new lib\Template();
 
+$template->assign( 'session', isset( $_SESSION ) ? $_SESSION : null );
 $template->assign( 'webDir', WEB_DIR );
 $template->assign( 'webName', WEB_NAME );
 $template->assign( 'loggedIn', loggedIn() );

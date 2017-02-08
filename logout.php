@@ -5,4 +5,4 @@
  * @licence MIT
  */
 
-logout();
+$currentUser->logout();

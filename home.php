@@ -7,5 +7,4 @@
 
 $template = new lib\Template();
 
-$template->assign( 'session', $_SESSION );
 $template->display( 'templates/home.phtml' );

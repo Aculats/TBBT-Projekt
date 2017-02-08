@@ -9,9 +9,16 @@
 require_once 'header.php';
 
 if ( isset( $_POST['login'] ) ) {
-    $user = \lib\User::load( $_POST );
+    if ( $user = \lib\User::sLoad( $_POST ) ) {
+        $user->login();
+        goToHome();
+    } else {
+        echo 'Der Benutzername oder das Password ist falsch. Bitte versuche es erneut.';
+    }
 } elseif ( isset( $_POST['register'] ) ) {
     $user = new \lib\User( $_POST );
+    $user->login();
+    goToHome();
 }
 
 if ( !empty( $_GET ) ) {

@@ -8,19 +8,44 @@
 
 namespace lib;
 
-
+/**
+ * Class User
+ * @package lib
+ */
 class User
 {
+    /**
+     * @var string
+     */
     public $id;
+
+    /**
+     * @var string
+     */
     public $username;
+    /**
+     * @var string
+     */
     public $password;
 
+    /**
+     * User constructor.
+     * @param string $post
+     */
     public function __construct( $post = '' ) {
+        var_dump( '__construct' );
+
         if ( isset( $post ) ) {
-            if ( $user = self::load( $post ) ) {
-                return $user;
-            } else {
-                return $this->create( $post );
+            $loadById = isset( $post['id'] ) ? $this->loadById( $post['id'] ) : false;
+            $load = self::sLoad( $post ) ? self::sLoad( $post ) : false;
+
+            switch ( true ) {
+                case $loadById:
+                    return $loadById;
+                case $load:
+                    return $load;
+                default:
+                    return $this->create( $post );
             }
         } else {
             $this->id = '';
@@ -31,116 +56,199 @@ class User
         }
     }
 
+    /**
+     * @return string
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * @param $id
+     */
+    private function setId( $id ) {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername() {
+        return $this->username;
+    }
+
+    /**
+     * @param $username
+     */
+    private function setUsername( $username ) {
+        $this->username = $username;
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getPasswordHash() {
+        if ( strlen( $this->password ) == 60 ) {
+            return $this->password;
+        }
+
+        return password_hash( $this->password, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
+    }
+
+    /**
+     * @param string $password
+     */
+    private function setPasswordHash( $password = '' ) {
+        if ( empty( $this->password ) ) {
+            $this->password = $password;
+        }
+
+        $this->password = password_hash( $this->password, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
+    }
+
+    /**
+     * @param $password
+     */
+    private function setPassword( $password ) {
+        $this->password = $password;
+    }
+
+    /**
+     * @param $post
+     * @return $this|bool
+     */
     public function create( $post ) {
+        var_dump( 'create' );
         global $pdo;
 
-        $this->username = !empty( $post['username'] ) ? trim( $post['username'] ) : null;
-        $this->password = !empty( $post['password'] ) ? trim( $post['password'] ) : null;
+        $this->setUsername( trim( $post['username'] ) );
+        $this->setPassword( trim( $post['password'] ) );
 
         // Construct the SQL statement and prepare it.
         $sql = "SELECT COUNT(username) AS num FROM users WHERE username = :username";
         $stmt = $pdo->prepare( $sql );
 
         // Bind the provided username to our prepared statement.
-        $stmt->bindValue( ':username', $this->username );
+        $stmt->bindValue( ':username', $this->getUsername() );
         $stmt->execute();
 
         // Fetch the row.
-        $row = $stmt->fetch( PDO::FETCH_ASSOC );
+        $row = $stmt->fetch( \PDO::FETCH_ASSOC );
 
         if ( $row['num'] > 0 ) {
             die( 'Der Benutzername existiert bereits.' );
         }
 
         // Hash the password as we do NOT want to store our passwords in plain text.
-        $passwordHash = password_hash( $this->password, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
+        $password = $this->getPasswordHash();
 
         // Prepare our INSERT statement.
         $sql = "INSERT INTO users (username, password) VALUES (:username, :password)";
         $stmt = $pdo->prepare( $sql );
         $stmt->bindValue( ':username', $this->username );
-        $stmt->bindValue( ':password', $passwordHash );
-        $result = $stmt->execute();
+        $stmt->bindValue( ':password', $password );
 
         // If the signup progress is successful.
-        if ( $result ) {
-            $this->login();
+        if ( $stmt->execute() ) {
+            $this->setPasswordHash();
+            $this->setId( $pdo->lastInsertId() );
+            return $this;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $id
+     * @return $this|bool
+     */
+    public function loadById( $id ) {
+        var_dump( 'loadById' );
+        global $pdo;
+
+        $sql = "SELECT * FROM users WHERE id = :id";
+        $stmt = $pdo->prepare( $sql );
+        $stmt->bindValue( ':id', $id );
+        $stmt->execute();
+
+        if ( $result = $stmt->fetch( \PDO::FETCH_ASSOC ) ) {
+            $this->setId( $result['id'] );
+            $this->setUsername( $result['username'] );
+            $this->setPassword( $result['password'] );
+            return $this;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function login() {
+        var_dump( 'login' );
+
+        if ( empty( $this->id ) ) {
+            return false;
+        }
+
+        $_SESSION['userId'] = $this->id;
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function logout() {
+        var_dump( 'logout' );
+
+        if ( isset( $_SESSION['userId'] ) && $_SESSION['userId'] == $this->id ) {
+            unset( $_SESSION['userId'] );
             return true;
         }
 
         return false;
     }
 
-    public function loadById( $id ) {
+    /**
+     * @param $post
+     * @return bool|User
+     */
+    public static function sLoad( $post ) {
+        var_dump( 'load' );
         global $pdo;
 
-        $sql = "SELECT * FROM users WHERE id = :id";
+        $sql = "SELECT id, username, password FROM users WHERE username = :username";
         $stmt = $pdo->prepare( $sql );
-        $stmt->bindValue( ':id', $id );
-        $result = $stmt->execute();
+        $stmt->bindValue( ':username', $post['username'] );
+        $stmt->execute();
 
-        if ( $result ) {
-            var_dump( $result );
-            $this->login();
-            return true;
+        $result = $stmt->fetch( \PDO::FETCH_ASSOC );
+        $passValid = password_verify( $post['password'], $result['password'] );
+
+        if ( $result && $passValid ) {
+            return new User( $result );
         } else {
-            var_dump( 'false' );
             return false;
         }
     }
 
-    public function login() {
+    /**
+     * @param $id
+     * @return bool|User
+     */
+    public static function sLoadById( $id ) {
+        var_dump( 'sLoadById' );
         global $pdo;
 
-        // Retrieve the user account information for the given username.
         $sql = "SELECT id, username, password FROM users WHERE id = :id";
         $stmt = $pdo->prepare( $sql );
-
-        // Bind value.
-        $stmt->bindValue( ':id', $this->id );
+        $stmt->bindValue( ':id', $id );
         $stmt->execute();
 
-        // Fetch row.
-        $user = $stmt->fetch( PDO::FETCH_ASSOC );
-
-        // If $row is false.
-        if ( $user === false ) {
-            die( 'Der Benutzername oder das Passwort ist nicht korrekt.' );
+        if ( $result = $stmt->fetch( \PDO::FETCH_ASSOC ) ) {
+            return new User( $result );
         } else {
-            // Compare the passwords.
-            $validPassword = password_verify( $this->password, $user['password'] );
-
-            // If $validPassword is true, the login has been successful.
-            if ( $validPassword ) {
-
-                // Provide the user with a login session.
-                $_SESSION['userId'] = $user['id'];
-                $_SESSION['loggedIn'] = time();
-            } else {
-                die( 'Der Benutzername oder das Passwort ist nicht korrekt.' );
-            }
-        }
-
-        goToHome();
-    }
-
-    public static function load( $post ) {
-        global $pdo;
-
-        // Hash the password as we do NOT want to store our passwords in plain text.
-        $passwordHash = password_hash( $post['password'], PASSWORD_BCRYPT, [ 'cost' => 12 ] );
-        $sql = "SELECT * FROM users WHERE username = :username AND password = :password";
-        $stmt = $pdo->prepare( $sql );
-        $stmt->bindValue( ':username', $post['username'] );
-        $stmt->bindValue( ':password', $passwordHash );
-        $result = $stmt->execute();
-
-        if ( $result ) {
-            var_dump( $result );
-            User::login();
-            return true;
-        } else {
-            var_dump( 'false' );
             return false;
         }
     }

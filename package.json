@@ -1,18 +1,15 @@
 {
-  "name": "tbbt",
+  "name": "tbbt-projekt",
   "version": "0.0.1",
   "description": "A project for the school",
   "main": "Gruntfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": {
-    "name": "Luca Braun",
-    "email": "luca6.11@web.de"
-  },
+  "author": "Luca Braun <luca6.11@web.de>",
   "repository": {
     "type": "git",
-    "url": "git@github.com:JanS96/TBBT-Projekt.git"
+    "url": "git+ssh://git@github.com/JanS96/TBBT-Projekt.git"
   },
   "bugs": {
     "url": "https://github.com/JanS96/TBBT-Projekt/issues"
@@ -22,5 +19,10 @@
     "grunt-contrib-clean": "^0.6.0",
     "grunt-jade4php": "^1.0.0"
   },
-  "private": true
+  "private": true,
+  "homepage": "https://github.com/JanS96/TBBT-Projekt#readme",
+  "dependencies": {
+    "grunt-cli": "^1.2.0"
+  },
+  "license": "MIT"
 }
