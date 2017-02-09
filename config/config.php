@@ -25,7 +25,7 @@ session_start();
 // Include our basic functions.
 require_once 'functions.php';
 
-$currentUser = null;
+$currentUser = new \lib\User();
 if ( isset( $_SESSION['userId'] ) ) {
-    $currentUser = \lib\User::sLoadById( $_SESSION['userId'] );
+    $currentUser = $currentUser->loadById( $_SESSION['userId'] );
 }

@@ -5,4 +5,7 @@
  * @licence MIT
  */
 
-$currentUser->logout();
+if ( $currentUser->id !== 0 ) {
+    $currentUser->logout();
+}
+ goToHome();
