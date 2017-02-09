@@ -9,87 +9,97 @@
 namespace lib;
 
 /**
- * Class User
- * @package lib
+ * Class to handle users.
+ *
+ * Class User.
+ *
+*@package lib
  */
-class User
-{
-    /**
-     * @var string
-     */
-    public $id;
-
-    /**
-     * @var string
-     */
-    public $username;
-    /**
-     * @var string
-     */
-    public $password;
+class User {
 
     /**
      * @var integer
      */
-    public $status;
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $username;
+
+    /**
+     * @var string
+     */
+    private $password;
+
+    /**
+     * @var string
+     */
+    private $passwordCheck;
+
+    /**
+     * @var integer
+     */
+    private $status;
 
     /**
      * User constructor.
-     * @param string $post
+     *
+     * @param array $args (optional)
+     *  Array with user arguments.
      */
-    public function __construct( $post = '' ) {
-        if ( isset( $post ) ) {
-            $loadById = isset( $post['id'] ) ? $this->loadById( $post['id'] ) : false;
-            $load = self::sLoad( $post ) ? self::sLoad( $post ) : false;
-
-            switch ( true ) {
-                case $loadById:
-                    return $loadById;
-                case $load:
-                    return $load;
-                default:
-                    return $this->create( $post );
+    public function __construct( $args = [ ] ) {
+        if ( !empty( $args ) ) {
+            // For each argument, set property with value.
+            foreach ( $args as $key => $value ) {
+                $this->__set( $key, $value );
             }
-        } else {
-            $this->id = 0;
-            $this->username = '';
-            $this->password = '';
-            $this->status = 1;
-
-            return $this;
         }
+
+        return $this;
     }
 
     /**
-     * @return string
+     * Magic function getter to get any property.
+     *
+     * @param mixed $prop
+     *  Property of this class.
+     *
+     * @return null|mixed
+     *  Returns the value of the property.
      */
-    public function getId() {
-        return $this->id;
+    public function __get( $prop ) {
+        if ( property_exists( $this, $prop ) ) {
+            return $this->$prop;
+        }
+
+        return null;
     }
 
     /**
-     * @param $id
+     * Magic function setter to set private properties.
+     *
+     * @param mixed $prop
+     *  Property that should be changed.
+     * @param mixed $value
+     *  Property value.
+     *
+     * @return object $this
+     *  Returns the current object.
      */
-    private function setId( $id ) {
-        $this->id = $id;
+    public function __set( $prop, $value ) {
+        if ( property_exists( $this, $prop ) ) {
+            $this->$prop = $value;
+        }
+
+        return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getUsername() {
-        return $this->username;
-    }
-
-    /**
-     * @param $username
-     */
-    private function setUsername( $username ) {
-        $this->username = $username;
-    }
-
-    /**
+     * Get the hashed password.
+     *
      * @return bool|string
+     *  Returns the hashed password or false on error.
      */
     public function getPasswordHash() {
         if ( strlen( $this->password ) == 60 ) {
@@ -100,9 +110,12 @@ class User
     }
 
     /**
-     * @param string $password
+     * If Password is not hashed, hash it.
+     *
+     * @param string $password (optional)
+     *  The password to hash.
      */
-    private function setPasswordHash( $password = '' ) {
+    public function setPasswordHash( $password = '' ) {
         if ( empty( $this->password ) ) {
             $this->password = $password;
         }
@@ -111,103 +124,235 @@ class User
     }
 
     /**
-     * @param $password
+     * Save the user object.
+     *
+     * @return bool
+     *  Returns true on success, false on failure.
      */
-    private function setPassword( $password ) {
-        $this->password = $password;
-    }
+    public function save() {
+        // If there is no username or password don't save.
+        if (
+            empty( $this->username )
+            || empty( $this->password )
+            || $this->password !== $this->passwordCheck
+        ) {
+            return false;
+        }
 
-    public function getStatus() {
-        return $this->status;
-    }
+        // If we have an id, just update the user, else create new.
+        if ( !empty( $this->id ) ) {
+            $this->update();
+        } else {
+            $this->create();
+        }
 
-    private function setStatus( $status ) {
-        $this->status = $status;
+        return true;
     }
 
     /**
-     * @param $post
-     * @return $this|bool
+     * Create a new user.
+     *
+     * @return $this|User
+     *  Returns the user object.
      */
-    public function create( $post ) {
+    private function create() {
         global $pdo;
 
-        $this->setUsername( trim( $post['username'] ) );
-        $this->setPassword( trim( $post['password'] ) );
-
-        // Construct the SQL statement and prepare it.
+        // Check if the username is already in use.
         $sql = "SELECT COUNT(username) AS num FROM users WHERE username = :username";
         $stmt = $pdo->prepare( $sql );
-
-        // Bind the provided username to our prepared statement.
-        $stmt->bindValue( ':username', $this->getUsername() );
+        $stmt->bindValue( ':username', $this->username );
         $stmt->execute();
-
-        // Fetch the row.
         $row = $stmt->fetch( \PDO::FETCH_ASSOC );
 
         if ( $row['num'] > 0 ) {
-            die( 'Der Benutzername existiert bereits.' );
+            // ToDo: Add error message
+            die( 'Gibt\'s schon' );
         }
 
-        // Hash the password as we do NOT want to store our passwords in plain text.
-        $password = $this->getPasswordHash();
+        // Get the hashed password so anybody can see it.
+        $passwordHash = $this->getPasswordHash();
 
-        // Prepare our INSERT statement.
+        // Save the user.
         $sql = "INSERT INTO users (username, password, status) VALUES (:username, :password, :status)";
         $stmt = $pdo->prepare( $sql );
-        $stmt->bindValue( ':username', $this->username );
-        $stmt->bindValue( ':password', $password );
-        $stmt->bindValue( ':status', 1 );
+        $stmt->bindValue( 'username', $this->username );
+        $stmt->bindValue( 'password', $passwordHash );
+        $stmt->bindValue( 'status', !empty( $this->status ) ? $this->status : 1 );
 
-        // If the signup progress is successful.
+        // If there are no SQL errors...
         if ( $stmt->execute() ) {
+            // ... set password to hashed;
             $this->setPasswordHash();
-            $this->setId( $pdo->lastInsertId() );
-            $this->setStatus( 1 );
+            // ... set id;
+            $this->id = $pdo->lastInsertId();
+            // ... set status to logged in;
+            $this->status = !empty( $this->status ) ? $this->status : 1;
+            // ... return the created user.
             return $this;
         }
 
-        return new User();
+        // ... else return a user object with the given properties.
+        return new User( $this );
     }
 
     /**
-     * @param $id
-     * @return $this|bool
+     * Update a given user.
+     *
+     * @return $this|User
+     *  Returns the user object.
      */
-    public function loadById( $id ) {
+    private function update() {
         global $pdo;
 
+        // Add all given parameters to the update statement.
+        $sql = "UPDATE users SET ";
+
+        $i = 0;
+        foreach ( $this as $key => $value ) {
+            if ( $key != 'id' ) {
+                $sql .= $key . " = :" . $key;
+                $i++;
+
+                if ( count( (array)$this ) > $i ) {
+                    $sql .= ", ";
+                }
+            }
+        }
+        $sql .= " WHERE id = :id";
+        $stmt = $pdo->prepare( $sql );
+
+        foreach ( $this as $key => $value ) {
+            $stmt->bindValue( $key, $value );
+        }
+
+        // If there are no SQL errors...
+        if ( $stmt->execute() ) {
+            // ... return the updated user.
+            return $this;
+        }
+
+        // ... else return a user object with the given properties.
+        return new User( $this );
+    }
+
+    /**
+     * Load a given user.
+     *
+     * @param integer|string $args
+     *  Identifier or username of the user to load.
+     *
+     * @return bool|User
+     *  Returns the given user or false on error.
+     */
+    public static function load( $args ) {
+        // Get the type to know if it's the id or username.
+        switch ( gettype( $args ) ) {
+            case 'integer':
+                $user = self::loadById( $args );
+                break;
+            case 'string':
+                $user = self::loadByUsername( $args );
+                break;
+            default:
+                $user = new User();
+        }
+
+        return $user;
+    }
+
+    /**
+     * Load a given user by identifier.
+     *
+     * @param integer $id
+     *  The identifier of a user.
+     *
+     * @return bool|User
+     *  Returns the user object or false on error.
+     */
+    private static function loadById( $id ) {
+        global $pdo;
+
+        // Get all of the information from user.
         $sql = "SELECT * FROM users WHERE id = :id";
         $stmt = $pdo->prepare( $sql );
         $stmt->bindValue( ':id', $id );
-        $stmt->execute();
 
-        if ( $result = $stmt->fetch( \PDO::FETCH_ASSOC ) ) {
-            $this->setId( $result['id'] );
-            $this->setUsername( $result['username'] );
-            $this->setPassword( $result['password'] );
-            $this->setStatus( $result['status'] );
-            return $this;
-        } else {
-            return new User();
+        // If there are no SQL errors...
+        if ( $result = $stmt->execute() ) {
+            // ... return a user object with data from database.
+            return new User( $result );
         }
+
+        // ... else return false.
+        return false;
     }
 
     /**
+     * Load a given user by username.
+     *
+     * @param string $username
+     *  Username of a user.
+     *
+     * @return bool|User
+     *  Returns the user object or false on error.
+     */
+    private static function loadByUsername( $username ) {
+        global $pdo;
+
+        // Get all of the information from user.
+        $sql = "SELECT * FROM users WHERE username = :username";
+        $stmt = $pdo->prepare( $sql );
+        $stmt->bindValue( ':username', $username );
+
+        // If there are no SQL errors...
+        if ( $result = $stmt->execute() ) {
+            // ... return a user object with data from database.
+            return new User( $result );
+        }
+
+        // ... else return false.
+        return false;
+    }
+
+    /**
+     * Deletes a given user.
+     *
      * @return bool
+     *  Returns true on success, false on failure.
+     */
+    public function delete() {
+        global $pdo;
+
+        // Remove all the data of this user,
+        $sql = "DELETE FROM users WHERE id = :id";
+        $stmt = $pdo->prepare( $sql );
+        $stmt->bindValue( ':id', $this->id );
+
+        return $stmt->execute();
+    }
+
+    /**
+     * Log in this user.
+     *
+     * @return bool
+     *  Returns true on success, false on failure.
      */
     public function login() {
         global $pdo;
 
-        if ( !empty( $this->id ) && $this->id != 0 ) {
+        // If we actually have a user, set status to logged in and save it in database.
+        if ( !empty( $this->id ) ) {
             $sql = "UPDATE users SET status = :status WHERE id = :id";
             $stmt = $pdo->prepare( $sql );
             $stmt->bindValue( ':status', 1 );
             $stmt->bindValue( ':id', $this->id );
+
             if ( $stmt->execute() ) {
+                // Add the user id to our session.
                 $_SESSION['userId'] = $this->id;
-                $this->setStatus( 1 );
+                $this->status = 1;
+
                 return true;
             }
         }
@@ -216,11 +361,15 @@ class User
     }
 
     /**
+     * Logout this user.
+     *
      * @return bool
+     *  Returns true on success, false on failure.
      */
     public function logout() {
         global $pdo;
 
+        // If there is a user id in our session and it is the id of the current user logout.
         if ( isset( $_SESSION['userId'] ) && $_SESSION['userId'] == $this->id ) {
             $sql = "UPDATE users SET status = :status WHERE id = :id";
             $stmt = $pdo->prepare( $sql );
@@ -228,53 +377,14 @@ class User
             $stmt->bindValue( ':id', $this->id );
 
             if ( $stmt->execute() ) {
-                $this->setStatus( 0 );
+                $this->status = 0;
+                // Remove the user id from our session.
                 unset( $_SESSION['userId'] );
+
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     * @param $post
-     * @return bool|User
-     */
-    public static function sLoad( $post ) {
-        global $pdo;
-
-        $sql = "SELECT * FROM users WHERE username = :username";
-        $stmt = $pdo->prepare( $sql );
-        $stmt->bindValue( ':username', $post['username'] );
-        $stmt->execute();
-
-        $result = $stmt->fetch( \PDO::FETCH_ASSOC );
-        $passValid = password_verify( $post['password'], $result['password'] );
-
-        if ( $result && $passValid ) {
-            return new User( $result );
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @param $id
-     * @return bool|User
-     */
-    public static function sLoadById( $id ) {
-        global $pdo;
-
-        $sql = "SELECT * FROM users WHERE id = :id";
-        $stmt = $pdo->prepare( $sql );
-        $stmt->bindValue( ':id', $id );
-        $stmt->execute();
-
-        if ( $result = $stmt->fetch( \PDO::FETCH_ASSOC ) ) {
-            return new User( $result );
-        } else {
-            return false;
-        }
     }
 }
