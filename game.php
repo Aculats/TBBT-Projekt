@@ -10,4 +10,13 @@ if ( !loggedIn() ) {
     goToHome();
 }
 
-echo '<h1>Game</h1>';
+$game = new \lib\Game( $currentUser );
+
+$template = new lib\Template();
+
+$template->assign( 'session', $_SESSION );
+$template->assign( 'webDir', WEB_DIR );
+$template->assign( 'webName', WEB_NAME );
+$template->assign( 'user', $currentUser );
+$template->assign( 'elements', \lib\Game::getElements() );
+$template->display( 'templates/game.phtml' );

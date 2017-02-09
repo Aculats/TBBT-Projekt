@@ -29,12 +29,15 @@ class User
     public $password;
 
     /**
+     * @var integer
+     */
+    public $status;
+
+    /**
      * User constructor.
      * @param string $post
      */
     public function __construct( $post = '' ) {
-        var_dump( '__construct' );
-
         if ( isset( $post ) ) {
             $loadById = isset( $post['id'] ) ? $this->loadById( $post['id'] ) : false;
             $load = self::sLoad( $post ) ? self::sLoad( $post ) : false;
@@ -48,9 +51,10 @@ class User
                     return $this->create( $post );
             }
         } else {
-            $this->id = '';
+            $this->id = 0;
             $this->username = '';
             $this->password = '';
+            $this->status = 1;
 
             return $this;
         }
@@ -113,12 +117,19 @@ class User
         $this->password = $password;
     }
 
+    public function getStatus() {
+        return $this->status;
+    }
+
+    private function setStatus( $status ) {
+        $this->status = $status;
+    }
+
     /**
      * @param $post
      * @return $this|bool
      */
     public function create( $post ) {
-        var_dump( 'create' );
         global $pdo;
 
         $this->setUsername( trim( $post['username'] ) );
@@ -143,19 +154,21 @@ class User
         $password = $this->getPasswordHash();
 
         // Prepare our INSERT statement.
-        $sql = "INSERT INTO users (username, password) VALUES (:username, :password)";
+        $sql = "INSERT INTO users (username, password, status) VALUES (:username, :password, :status)";
         $stmt = $pdo->prepare( $sql );
         $stmt->bindValue( ':username', $this->username );
         $stmt->bindValue( ':password', $password );
+        $stmt->bindValue( ':status', 1 );
 
         // If the signup progress is successful.
         if ( $stmt->execute() ) {
             $this->setPasswordHash();
             $this->setId( $pdo->lastInsertId() );
+            $this->setStatus( 1 );
             return $this;
         }
 
-        return false;
+        return new User();
     }
 
     /**
@@ -163,7 +176,6 @@ class User
      * @return $this|bool
      */
     public function loadById( $id ) {
-        var_dump( 'loadById' );
         global $pdo;
 
         $sql = "SELECT * FROM users WHERE id = :id";
@@ -175,9 +187,10 @@ class User
             $this->setId( $result['id'] );
             $this->setUsername( $result['username'] );
             $this->setPassword( $result['password'] );
+            $this->setStatus( $result['status'] );
             return $this;
         } else {
-            return false;
+            return new User();
         }
     }
 
@@ -185,26 +198,40 @@ class User
      * @return bool
      */
     public function login() {
-        var_dump( 'login' );
+        global $pdo;
 
-        if ( empty( $this->id ) ) {
-            return false;
+        if ( !empty( $this->id ) && $this->id != 0 ) {
+            $sql = "UPDATE users SET status = :status WHERE id = :id";
+            $stmt = $pdo->prepare( $sql );
+            $stmt->bindValue( ':status', 1 );
+            $stmt->bindValue( ':id', $this->id );
+            if ( $stmt->execute() ) {
+                $_SESSION['userId'] = $this->id;
+                $this->setStatus( 1 );
+                return true;
+            }
         }
 
-        $_SESSION['userId'] = $this->id;
-
-        return true;
+        return false;
     }
 
     /**
      * @return bool
      */
     public function logout() {
-        var_dump( 'logout' );
+        global $pdo;
 
         if ( isset( $_SESSION['userId'] ) && $_SESSION['userId'] == $this->id ) {
-            unset( $_SESSION['userId'] );
-            return true;
+            $sql = "UPDATE users SET status = :status WHERE id = :id";
+            $stmt = $pdo->prepare( $sql );
+            $stmt->bindValue( ':status', 0 );
+            $stmt->bindValue( ':id', $this->id );
+
+            if ( $stmt->execute() ) {
+                $this->setStatus( 0 );
+                unset( $_SESSION['userId'] );
+                return true;
+            }
         }
 
         return false;
@@ -215,10 +242,9 @@ class User
      * @return bool|User
      */
     public static function sLoad( $post ) {
-        var_dump( 'load' );
         global $pdo;
 
-        $sql = "SELECT id, username, password FROM users WHERE username = :username";
+        $sql = "SELECT * FROM users WHERE username = :username";
         $stmt = $pdo->prepare( $sql );
         $stmt->bindValue( ':username', $post['username'] );
         $stmt->execute();
@@ -238,10 +264,9 @@ class User
      * @return bool|User
      */
     public static function sLoadById( $id ) {
-        var_dump( 'sLoadById' );
         global $pdo;
 
-        $sql = "SELECT id, username, password FROM users WHERE id = :id";
+        $sql = "SELECT * FROM users WHERE id = :id";
         $stmt = $pdo->prepare( $sql );
         $stmt->bindValue( ':id', $id );
         $stmt->execute();
