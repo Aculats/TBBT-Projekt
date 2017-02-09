@@ -51,8 +51,8 @@ class Game {
     public function __construct( $player1, $player2 = '' ) {
         if ( empty( $player2 ) ) {
             $player2 = $this->findPlayer( $player1->id );
-            var_dump($player1->getUsername());
-            var_dump($player2->getUsername());
+            var_dump( $player1->__get( 'username' ) );
+            var_dump( $player2->__get( 'username' ) );
         }
 
     }
@@ -79,7 +79,7 @@ class Game {
             } while( $rows[$index]['id'] == $id );
 
             if ( !$break ) {
-                $player2 = User::sLoadById( $rows[$index]['id'] );
+                $player2 = User::load( $rows[$index]['id'] );
                 return $player2;
             }
         } else {

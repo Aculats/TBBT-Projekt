@@ -9,15 +9,13 @@
 require_once 'header.php';
 
 if ( isset( $_POST['login'] ) ) {
-    if ( $user = \lib\User::sLoad( $_POST ) ) {
-        $user->login();
-        goToHome();
-    } else {
-        echo 'Der Benutzername oder das Password ist falsch. Bitte versuche es erneut.';
-    }
+    $currentUser = new \lib\User( $_POST );
+    $currentUser->login();
+    goToHome();
 } elseif ( isset( $_POST['register'] ) ) {
-    $user = new \lib\User( $_POST );
-    $user->login();
+    $currentUser = new \lib\User( $_POST );
+    $currentUser->save();
+    $currentUser->login();
     goToHome();
 }
 
@@ -34,4 +32,5 @@ if ( !empty( $_GET ) ) {
 
 require_once 'footer.php';
 
+var_dump( 'Logged in: ' );
 var_dump(loggedIn());

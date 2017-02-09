@@ -6,6 +6,9 @@
  * Time: 10:53
  */
 
+// Start the session.
+session_start();
+
 require_once 'init_constants.php';
 
 // Include our MySQL connection.
@@ -19,13 +22,11 @@ foreach ( $classArray as $class ) {
     }
 }
 
-// Start the session.
-session_start();
-
 // Include our basic functions.
 require_once 'functions.php';
 
 $currentUser = new \lib\User();
 if ( isset( $_SESSION['userId'] ) ) {
-    $currentUser = $currentUser->loadById( $_SESSION['userId'] );
+    $currentUser = \lib\User::load( $_SESSION['userId'] );
+    $currentUser->login();
 }

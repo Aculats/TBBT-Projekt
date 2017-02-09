@@ -170,6 +170,11 @@ class User {
             die( 'Gibt\'s schon' );
         }
 
+        if ( !$this->verifyPass( $this->password, $this->passwordCheck ) ) {
+            // ToDo: Add error message
+            die( 'nicht das gleiche Passwort' );
+        }
+
         // Get the hashed password so anybody can see it.
         $passwordHash = $this->getPasswordHash();
 
@@ -280,8 +285,9 @@ class User {
 
         // If there are no SQL errors...
         if ( $result = $stmt->execute() ) {
+            $data = $stmt->fetch( \PDO::FETCH_ASSOC );
             // ... return a user object with data from database.
-            return new User( $result );
+            return new User( $data );
         }
 
         // ... else return false.
@@ -306,9 +312,10 @@ class User {
         $stmt->bindValue( ':username', $username );
 
         // If there are no SQL errors...
-        if ( $result = $stmt->execute() ) {
+        if ( $stmt->execute() ) {
+            $data = $stmt->fetch( \PDO::FETCH_ASSOC );
             // ... return a user object with data from database.
-            return new User( $result );
+            return new User( $data );
         }
 
         // ... else return false.
@@ -333,6 +340,27 @@ class User {
     }
 
     /**
+     * Check the password.
+     *
+     * @param string $passwordIn
+     *  Password, that the user typed in.
+     * @param string $realPassword
+     *  Second password on registration or hashed from the database.
+     * @param bool $hashed (optional)
+     *  Set true when $realPassword is hashed.
+     *
+     * @return bool
+     *  Returns the result of the checked passwords.
+     */
+    public function verifyPass( $passwordIn, $realPassword, $hashed = false ) {
+        if ( $hashed ) {
+            return password_verify( $passwordIn, $realPassword );
+        }
+
+        return $passwordIn == $realPassword ? true : false;
+    }
+
+    /**
      * Log in this user.
      *
      * @return bool
@@ -341,19 +369,22 @@ class User {
     public function login() {
         global $pdo;
 
-        // If we actually have a user, set status to logged in and save it in database.
-        if ( !empty( $this->id ) ) {
-            $sql = "UPDATE users SET status = :status WHERE id = :id";
-            $stmt = $pdo->prepare( $sql );
-            $stmt->bindValue( ':status', 1 );
-            $stmt->bindValue( ':id', $this->id );
+        $tempUser = self::loadByUsername( $this->username );
+        if ( $this->verifyPass( $this->password, $tempUser->password, true ) ) {
+            // If we actually have a user, set status to logged in and save it in database.
+            if ( !empty( $tempUser->id ) ) {
+                $sql = "UPDATE users SET status = :status WHERE id = :id";
+                $stmt = $pdo->prepare( $sql );
+                $stmt->bindValue( ':status', 1 );
+                $stmt->bindValue( ':id', $tempUser->id );
 
-            if ( $stmt->execute() ) {
-                // Add the user id to our session.
-                $_SESSION['userId'] = $this->id;
-                $this->status = 1;
+                if ( $stmt->execute() ) {
+                    // Add the user id to our session.
+                    $_SESSION['userId'] = $tempUser->id;
+                    $tempUser->status = 1;
 
-                return true;
+                    return true;
+                }
             }
         }
 
