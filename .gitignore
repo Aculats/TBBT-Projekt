@@ -46,3 +46,7 @@ fabric.properties
 .idea/copyright/
 .idea/encodings.xml
 .idea/vcs.xml
+
+\.idea/modules\.xml
+
+\.idea/TBBT-Projekt\.iml
