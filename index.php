@@ -31,7 +31,3 @@ if ( !empty( $_GET ) ) {
 }
 
 require_once 'footer.php';
-
-var_dump( 'Logged in: ' );
-var_dump(loggedIn());
-var_dump($_SESSION);

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
--- https://www.phpmyadmin.net/
+-- version 4.5.1
+-- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 07. Feb 2017 um 18:53
--- Server-Version: 10.1.21-MariaDB
--- PHP-Version: 7.0.15
+-- Erstellungszeit: 20. Apr 2017 um 10:25
+-- Server-Version: 10.1.19-MariaDB
+-- PHP-Version: 7.0.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -19,8 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `tbbt`
 --
-CREATE DATABASE IF NOT EXISTS `tbbt` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `tbbt`;
 
 -- --------------------------------------------------------
 
@@ -28,15 +26,27 @@ USE `tbbt`;
 -- Tabellenstruktur für Tabelle `matches`
 --
 
-DROP TABLE IF EXISTS `matches`;
-CREATE TABLE IF NOT EXISTS `matches` (
-  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `matches` (
+  `id` int(11) UNSIGNED NOT NULL,
   `players` varchar(255) NOT NULL,
   `winner` int(11) NOT NULL,
   `loser` int(11) NOT NULL,
   `rounds` tinyint(4) NOT NULL,
-  `elements` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
+  `elements` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `singleuser`
+--
+
+CREATE TABLE `singleuser` (
+  `player1` varchar(255) NOT NULL,
+  `player2` varchar(255) NOT NULL,
+  `round` int(11) NOT NULL,
+  `selection1` int(11) NOT NULL,
+  `selection2` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -45,16 +55,44 @@ CREATE TABLE IF NOT EXISTS `matches` (
 -- Tabellenstruktur für Tabelle `users`
 --
 
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `users` (
+  `id` int(10) UNSIGNED NOT NULL,
   `username` varchar(25) NOT NULL,
   `password` varchar(60) NOT NULL,
-  `status` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
+  `status` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
+--
+-- Indizes der exportierten Tabellen
+--
+
+--
+-- Indizes für die Tabelle `matches`
+--
+ALTER TABLE `matches`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indizes für die Tabelle `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- AUTO_INCREMENT für exportierte Tabellen
+--
+
+--
+-- AUTO_INCREMENT für Tabelle `matches`
+--
+ALTER TABLE `matches`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

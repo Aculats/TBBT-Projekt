@@ -2,34 +2,34 @@
  * Created by Jan on 09.02.2017.
  */
 $(document).ready(function(){
-    var schere = $('#scissors');
-    var stein = $('#rock');
-    var papier = $('#paper');
-    var echse = $('#lizard');
+    var schere = $('#schere');
+    var stein = $('#stein');
+    var papier = $('#papier');
+    var echse = $('#echse');
     var spock = $('#spock');
 
     schere.click(function (e) {
         e.preventDefault();
-        console.log('schere');
+        console.log(this.id);
     });
 
     stein.click(function (e) {
         e.preventDefault();
-        console.log('stein');
+        console.log(this.id);
     });
 
     papier.click(function (e) {
         e.preventDefault();
-        console.log('papier');
+        console.log(this.id);
     });
 
     echse.click(function (e) {
         e.preventDefault();
-        console.log('echse');
+        console.log(this.id);
     });
 
     spock.click(function (e) {
         e.preventDefault();
-        console.log('spock');
+        console.log(this.id);
     });
 });

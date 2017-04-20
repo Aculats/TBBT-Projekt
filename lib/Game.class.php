@@ -41,11 +41,26 @@ class Game {
     ];
 
     const ELEMENTS = [
-        'rock' => self::ROCK,
-        'paper' => self::PAPER,
-        'scissors' => self::SCISSORS,
-        'lizard' => self::LIZARD,
-        'spock' => self::SPOCK
+        [
+            'id' => 'stein',
+            'name' => 'Stein',
+        ],
+        [
+            'id' => 'papier',
+            'name' => 'Papier',
+        ],
+        [
+            'id' => 'schere',
+            'name' => 'Schere',
+        ],
+        [
+            'id' => 'echse',
+            'name' => 'Echse',
+        ],
+        [
+            'id' => 'spock',
+            'name' => 'Spock',
+        ],
     ];
 
     public function __construct( $player1, $player2 = '' ) {
