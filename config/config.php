@@ -14,6 +14,10 @@ require_once 'init_constants.php';
 // Include our MySQL connection.
 require_once 'db.php';
 
+if ( isset( $_GET['dev'] ) ) {
+    require_once 'run_commands.php';
+}
+
 // Include classes.
 $classArray = scandir( 'lib' );
 foreach ( $classArray as $class ) {

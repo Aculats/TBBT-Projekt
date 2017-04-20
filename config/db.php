@@ -19,6 +19,13 @@ $pdoOptions = [
 /**
  * Tables in DB - tbbt:
  *
+ * singleuser:
+ *  - player1   -> varchar (255)
+ *  - player2   -> varchar (255)
+ *  - round     -> int
+ *  - selection1-> int
+ *  - selection2-> int
+ *
  * users:
  *  - id        -> int (primary)
  *  - username  -> varchar (25)
@@ -33,6 +40,7 @@ $pdoOptions = [
  *  - elements  -> JSON
  */
 $tables = [
+    'singleuser',
     'users',
     'matches'
 ];

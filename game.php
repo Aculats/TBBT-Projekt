@@ -1,22 +1,35 @@
 <?php
 /**
- * @since 1.0.0
- * @author Luca
- * @licence MIT
+ * Created by PhpStorm.
+ * User: Luca, Omer, Jan, Tobias M.
+ * Date: 20.04.2017
+ * Time: 08:53
  */
 
-if ( !loggedIn() ) {
-    $_SESSION['failMessage'] = 'Sie müssen dafür eingeloggt sein. Jetzt <a href="?login">einloggen</a> oder <a href="?register">registrieren</a>.';
-    goToHome();
-}
+$game = new \Lib\SinglePlayer();
+$game->startGame();
 
-$game = new \lib\Game( $currentUser );
+?>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h1>Game - <?php echo $game->currentPlayer; ?></h1>
+                </div>
 
-$template = new lib\Template();
-
-$template->assign( 'session', $_SESSION );
-$template->assign( 'webDir', WEB_DIR );
-$template->assign( 'webName', WEB_NAME );
-$template->assign( 'user', $currentUser );
-$template->assign( 'elements', \lib\Game::getElements() );
-$template->display( 'templates/game.phtml' );
+                <div class="panel-body">
+                    <?php
+                    foreach ( \lib\Game::getElements() as $element ) :
+                    ?>
+                    <div class="element">
+                        <a href="#" id="<?php echo $element['id']; ?>"><?php echo $element['name']; ?> </a>
+                    </div>
+                    <?php
+                    endforeach;
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

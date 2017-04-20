@@ -6,9 +6,9 @@
 }
 
 .online {
-    background-color: #000;
+  background-color: #3c763d;
 }
 
 .offline {
-    background-color: #f00;
+  background-color: #a94442;
 }

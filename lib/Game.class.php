@@ -12,31 +12,31 @@ namespace lib;
 class Game {
     public $id;
 
-    const ROCK = 1;
-    const PAPER = 2;
-    const SCISSORS = 3;
-    const LIZARD = 4;
+    const STEIN = 1;
+    const PAPIER = 2;
+    const SCHERE = 3;
+    const ECHSE = 4;
     const SPOCK = 5;
     const MATCHES = [
-        self::ROCK => [
-            self::SCISSORS,
-            self::LIZARD
+        self::STEIN => [
+            self::SCHERE,
+            self::ECHSE
         ],
-        self::PAPER => [
-            self::ROCK,
+        self::PAPIER => [
+            self::STEIN,
             self::SPOCK
         ],
-        self::SCISSORS => [
-            self::PAPER,
-            self::LIZARD
+        self::SCHERE => [
+            self::PAPIER,
+            self::ECHSE
         ],
-        self::LIZARD => [
+        self::ECHSE => [
             self::SPOCK,
-            self::PAPER
+            self::PAPIER
         ],
         self::SPOCK => [
-            self::SCISSORS,
-            self::ROCK
+            self::SCHERE,
+            self::STEIN
         ],
     ];
 
@@ -63,47 +63,6 @@ class Game {
         ],
     ];
 
-    public function __construct( $player1, $player2 = '' ) {
-        if ( empty( $player2 ) ) {
-            $player2 = $this->findPlayer( $player1->id );
-            var_dump( $player1->__get( 'username' ) );
-            var_dump( $player2->__get( 'username' ) );
-        }
-
-    }
-
-    private function findPlayer( $id ) {
-        global $pdo;
-
-        $sql = "SELECT * FROM users WHERE status = :status";
-        $stmt = $pdo->prepare( $sql );
-        $stmt->bindValue( ':status', 1 );
-        $stmt->execute();
-
-        if ( $rows = $stmt->fetchAll() ) {
-            $rowCount = count( $rows );
-            $i = 0;
-            $break = false;
-            do {
-                if ( $i == 10 ) {
-                    $break = true;
-                    break;
-                }
-                $index = rand( 0, $rowCount - 1 );
-                $i++;
-            } while( $rows[$index]['id'] == $id );
-
-            if ( !$break ) {
-                $player2 = User::load( $rows[$index]['id'] );
-                return $player2;
-            }
-        } else {
-            die( 'Anybody is online.' );
-        }
-
-        die( 'Cannot find any user.' );
-    }
-
     public static function getElements() {
         return self::ELEMENTS;
     }
@@ -114,7 +73,7 @@ class Game {
             throw new Exception( 'Invalid input!' );
         }
 
-        return in_array( $player2, self::matches[$player1] );
+        return in_array( $player2, self::MATCHES[$player1] );
     }
 
     public static function isValid( $num )
