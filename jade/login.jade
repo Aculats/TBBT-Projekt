@@ -1,0 +1,19 @@
+//
+   Created by Jan, Omer, Luca, Tobias M. on 19.04.2017.
+.container
+    .row
+        .col-md-10.col-md-offset-1
+            .panel.panel-default
+                .panel-heading
+                    h1 Login
+                .panel-body
+                    form(class='form-horizontal', action!=webDir, method='post')
+                        input(type='hidden', name='login')
+                        .form-group.col-md-12
+                            label(class='control-label', for='username') Username
+                            input(class='form-control', type='text', id='username', name='username', required)
+                        .form-group.col-md-12
+                            label(class='control-label', for='password') Password
+                            input(class='form-control', type='password', id='password', name='password', required)
+                        .form-group.col-md-12
+                            button(class='btn btn-primary', type='submit') Login

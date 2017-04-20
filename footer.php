@@ -8,4 +8,5 @@
 
 $template = new lib\Template();
 
+$template->assign( 'loggedIn', loggedIn() );
 $template->display( 'templates/footer.phtml' );

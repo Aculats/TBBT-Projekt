@@ -1,2 +1,10 @@
+- loggedInClass = ' offline'
+if loggedIn == true
+    - loggedInClass = ' online';
+
 footer
-  div
+  .container
+      .row
+          .col-md-10.col-md-offset-1
+              span Logged in:
+              span(class='online-state #{loggedInClass}')

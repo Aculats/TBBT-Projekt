@@ -401,7 +401,7 @@ class User {
         global $pdo;
 
         // If there is a user id in our session and it is the id of the current user logout.
-        if ( isset( $_SESSION['userId'] ) && $_SESSION['userId'] == $this->id ) {
+//        if ( isset( $_SESSION['userId'] ) && $_SESSION['userId'] == $this->id ) {
             $sql = "UPDATE users SET status = :status WHERE id = :id";
             $stmt = $pdo->prepare( $sql );
             $stmt->bindValue( ':status', 0 );
@@ -414,7 +414,7 @@ class User {
 
                 return true;
             }
-        }
+//        }
 
         return false;
     }
