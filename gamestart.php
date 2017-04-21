@@ -16,23 +16,13 @@
                 </div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal col-md-8 col-md-offset-2" action="?singleplayer" method="post">
+                    <form class="form-horizontal col-md-8 col-md-offset-2" action="?game" method="post">
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="player1">Spieler 1</label>
                             <div class="col-md-10">
                                 <input type="text"
                                        id="player1"
                                        name="player1"
-                                       class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-md-2 control-label" for="player2">Spieler 2</label>
-                            <div class="col-md-10">
-                                <input type="text"
-                                       id="player2"
-                                       name="player2"
                                        class="form-control">
                             </div>
                         </div>

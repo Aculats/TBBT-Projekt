@@ -41,43 +41,37 @@ class Game {
     ];
 
     const ELEMENTS = [
-        [
-            'id' => 'stein',
+        self::STEIN => [
+            'id' => self::STEIN,
             'name' => 'Stein',
         ],
-        [
-            'id' => 'papier',
+        self::PAPIER => [
+            'id' => self::PAPIER,
             'name' => 'Papier',
         ],
-        [
-            'id' => 'schere',
+        self::SCHERE => [
+            'id' => self::SCHERE,
             'name' => 'Schere',
         ],
-        [
-            'id' => 'echse',
+        self::ECHSE => [
+            'id' => self::ECHSE,
             'name' => 'Echse',
         ],
-        [
-            'id' => 'spock',
+        self::SPOCK => [
+            'id' => self::SPOCK,
             'name' => 'Spock',
         ],
     ];
 
-    public static function getElements() {
-        return self::ELEMENTS;
-    }
-
-    public static function play( $player1, $player2 )
-    {
-        if ( !self::isValid( $player1 ) || !self::isValid( $player2 ) ) {
-            throw new Exception( 'Invalid input!' );
+    public static function getElements( $selection = null ) {
+        if ( $selection == null ) {
+            return self::ELEMENTS;
         }
 
-        return in_array( $player2, self::MATCHES[$player1] );
+        return self::ELEMENTS[$selection];
     }
 
-    public static function isValid( $num )
-    {
-        return array_key_exists( self::MATCHES, $num );
+    public static function getMatches( $selection ) {
+        return self::MATCHES[(int)$selection];
     }
 }

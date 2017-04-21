@@ -7,7 +7,6 @@
  */
 
 $game = new \Lib\SinglePlayer();
-$game->startGame();
 
 ?>
 <div class="container">
@@ -15,19 +14,36 @@ $game->startGame();
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h1>Game - <?php echo $game->currentPlayer; ?></h1>
+                    <h1>Am Zug: <?php echo $game->currentPlayer; ?></h1>
                 </div>
 
                 <div class="panel-body">
-                    <?php
-                    foreach ( \lib\Game::getElements() as $element ) :
-                    ?>
-                    <div class="element">
-                        <a href="#" id="<?php echo $element['id']; ?>"><?php echo $element['name']; ?> </a>
+                    <div class="row">
+                        <?php
+                        $i = 0;
+                        foreach ( \lib\Game::getElements() as $element ) :
+                            ?>
+                            <form action="?game"
+                                    method="post"
+                                    class="form-horizontal col-md-2<?php echo $i == 0 ? ' col-md-offset-1' : ''; ?>"
+                                    id="<?php echo $element['id']; ?>">
+                                <button type="submit"
+                                        class="btn btn-primary"
+                                        name="move"
+                                        value="<?php echo $element['id']; ?>">
+                                    <img src="img/<?php echo $element['name']; ?>.png"
+                                            class="col-md-12"
+                                            alt="<?php echo $element['name']; ?>">
+                                </button>
+                                <div class="text-center">
+                                    <?php echo $element['name']; ?>
+                                </div>
+                            </form>
+                            <?php
+                            $i++;
+                        endforeach;
+                        ?>
                     </div>
-                    <?php
-                    endforeach;
-                    ?>
                 </div>
             </div>
         </div>

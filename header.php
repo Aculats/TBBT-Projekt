@@ -13,5 +13,4 @@ $template = new lib\Template();
 $template->assign( 'session', isset( $_SESSION ) ? $_SESSION : null );
 $template->assign( 'webDir', WEB_DIR );
 $template->assign( 'webName', WEB_NAME );
-$template->assign( 'loggedIn', loggedIn() );
 $template->display( 'templates/header.phtml' );
