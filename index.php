@@ -8,17 +8,6 @@
 
 require_once 'header.php';
 
-if ( isset( $_POST['login'] ) ) {
-    $currentUser = new \lib\User( $_POST );
-    $currentUser->login();
-    goToHome();
-} elseif ( isset( $_POST['register'] ) ) {
-    $currentUser = new \lib\User( $_POST );
-    $currentUser->save();
-    $currentUser->login();
-    goToHome();
-}
-
 if ( !empty( $_GET ) ) {
     $getKeys = array_keys( $_GET );
     if ( count( $getKeys ) < 2 && is_file( $getKeys[0] . '.php' ) ) {
@@ -29,5 +18,3 @@ if ( !empty( $_GET ) ) {
 } else {
     require_once 'home.php';
 }
-
-require_once 'footer.php';

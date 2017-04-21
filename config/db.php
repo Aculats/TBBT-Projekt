@@ -19,22 +19,16 @@ $pdoOptions = [
 /**
  * Tables in DB - tbbt:
  *
- * users:
+ * singleuser:
  *  - id        -> int (primary)
- *  - username  -> varchar (25)
- *  - password  -> varchar (60)
- *
- * matches:
- *  - id        -> int (primary)
- *  - players   -> JSON
- *  - winner    -> int
- *  - loser     -> int
- *  - rounds    -> tinyint
- *  - elements  -> JSON
+ *  - player1   -> varchar (255)
+ *  - player2   -> varchar (255)
+ *  - round     -> int
+ *  - selection1-> int
+ *  - selection2-> int
  */
 $tables = [
-    'users',
-    'matches'
+    'singleuser',
 ];
 
 // Connect to MySQL and instantiate the PDO object.

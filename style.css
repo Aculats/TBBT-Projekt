@@ -1,14 +1,3 @@
-.online-state {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 100%;
-}
-
-.online {
-    background-color: #000;
-}
-
-.offline {
-    background-color: #f00;
+img {
+  width: 100%;
 }

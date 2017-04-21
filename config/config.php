@@ -22,11 +22,6 @@ foreach ( $classArray as $class ) {
     }
 }
 
-// Include our basic functions.
-require_once 'functions.php';
-
-$currentUser = new \lib\User();
-if ( isset( $_SESSION['userId'] ) ) {
-    $currentUser = \lib\User::load( $_SESSION['userId'] );
-    $currentUser->login();
+function goToHome() {
+    header( 'Location: ' . WEB_DIR );
 }
