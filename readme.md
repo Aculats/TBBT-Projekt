@@ -1,16 +1,16 @@
-#TBBT - The Big Bang Theory - Browsergame
+# TBBT - The Big Bang Theory - Browsergame
 
-###Introduction:
+### Introduction:
 *This project was made on a windows machine and works (maybe) just on a windows machine yet.*
 
-###Requirements
+### Requirements
 
 - xampp
 - PHP7
 - NodeJS
 - Grunt
 
-###Installation
+### Installation
 
 __Database__
 
